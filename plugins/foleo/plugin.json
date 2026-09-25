@@ -1,6 +1,6 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "foleo",
-  "displayName": "Foleo",
   "version": "0.1.3",
   "description": "Publish and manage Markdown and eligible active HTML artifacts on Foleo through its remote MCP server.",
   "author": {
@@ -8,6 +8,7 @@
     "url": "https://foleo.app"
   },
   "homepage": "https://foleo.app",
+  "repository": "https://github.com/getfoleo/plugins",
   "license": "MIT",
   "keywords": [
     "foleo",
@@ -15,7 +16,5 @@
     "markdown",
     "share-links",
     "mcp"
-  ],
-  "skills": "./skills/",
-  "mcpServers": "./.mcp.json"
+  ]
 }

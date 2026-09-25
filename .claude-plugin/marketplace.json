@@ -9,7 +9,7 @@
       "name": "foleo",
       "source": "./plugins/foleo",
       "description": "Publish and manage Markdown and eligible active HTML artifacts on Foleo through its remote MCP server.",
-      "version": "0.1.2"
+      "version": "0.1.3"
     }
   ]
 }

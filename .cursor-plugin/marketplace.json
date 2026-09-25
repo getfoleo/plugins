@@ -1,0 +1,16 @@
+{
+  "name": "foleo",
+  "owner": {
+    "name": "Foleo"
+  },
+  "metadata": {
+    "description": "Foleo's agent plugin: publish and manage artifacts on Foleo."
+  },
+  "plugins": [
+    {
+      "name": "foleo",
+      "source": "plugins/foleo",
+      "description": "Publish and manage Markdown and eligible active HTML artifacts on Foleo through its remote MCP server."
+    }
+  ]
+}
