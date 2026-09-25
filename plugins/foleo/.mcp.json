@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "foleo": {
+      "type": "http",
+      "url": "https://mcp.foleo.app/mcp"
+    }
+  }
+}

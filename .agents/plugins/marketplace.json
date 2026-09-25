@@ -1,0 +1,20 @@
+{
+  "name": "foleo",
+  "interface": {
+    "displayName": "Foleo"
+  },
+  "plugins": [
+    {
+      "name": "foleo",
+      "source": {
+        "source": "local",
+        "path": "./plugins/foleo"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

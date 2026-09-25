@@ -1,0 +1,21 @@
+{
+  "name": "foleo",
+  "displayName": "Foleo",
+  "version": "0.1.2",
+  "description": "Publish and manage Markdown and eligible active HTML artifacts on Foleo through its remote MCP server.",
+  "author": {
+    "name": "Foleo",
+    "url": "https://foleo.app"
+  },
+  "homepage": "https://foleo.app",
+  "license": "MIT",
+  "keywords": [
+    "foleo",
+    "publishing",
+    "markdown",
+    "share-links",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
