@@ -39,6 +39,23 @@ Pass the existing artifact and its current `etag`; the URL does not move.
 Read the artifact first if you are not certain the `etag` is current. Ask the
 human before overwriting a published document they did not just hand you.
 
+For a small change, send `edits` instead of the whole document:
+
+```json
+{
+  "artifactId": "<id>",
+  "etag": "<current etag>",
+  "source": {
+    "sourceFormat": "markdown",
+    "edits": [{ "find": "exact old text", "replace": "new text" }],
+    "baseContentHash": "<sha256 of the current source>"
+  },
+  "idempotencyKey": "<uuid>"
+}
+```
+
+The result's `contentHash` is the sha256 of the new document.
+
 ## Already published?
 
 If creating returns `matching_source_exists`, Foleo already holds this content

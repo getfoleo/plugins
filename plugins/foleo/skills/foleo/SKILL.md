@@ -71,14 +71,17 @@ Read:
 | `get_foleo_capabilities`    | Connection, role, scopes, availability, limits, contract version        |
 | `list_foleo_artifacts`      | Find what the account already has (`kind`, `format`, `status`, `query`) |
 | `get_foleo_artifact`        | Current state and the fresh `etag` for one artifact                     |
+| `get_foleo_artifact_source` | The exact current source, to edit or move it elsewhere                  |
 | `get_foleo_deletion_status` | Where a deletion is in its lifecycle                                    |
 | `list_foleo_artifact_names` | Names this account holds (active-HTML accounts only)                    |
+| `check_foleo_artifact_name` | Preview the address an HTML create would claim, without the page        |
 
 Publish and change:
 
 | Tool                                                                                        | Use it for                                                            |
 | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `publish_foleo_artifact`                                                                    | Create a new artifact, or update one by passing `artifactId` + `etag` |
+| `stage_foleo_upload` / `append_foleo_upload_chunk`                                          | Send a large source in hashed pieces before publishing it             |
 | `update_foleo_artifact_settings`                                                            | Change a setting the server lists as mutable                          |
 | `attach_foleo_artifact_name` / `rename_foleo_artifact_name` / `release_foleo_artifact_name` | The address of an active-HTML artifact                                |
 
@@ -146,6 +149,52 @@ Updating the same artifact keeps its URL:
 Markdown takes no `name`: its address is the account handle plus a slug derived
 from the document. Names belong to active-HTML artifacts.
 
+An HTML page you create gets a **scoped** address by default,
+`<slug>--<handle>` (for example `quarterly-report--yourhandle.foleo.site`), and
+`name` is its slug. Scoped addresses are not capped by the name quota. A short
+global **vanity** name is opt-in with `address: "vanity"` and is capped. This
+is a change: `name` alone used to mean a vanity name. See
+`references/active-html.md`.
+
+### "Put this Claude artifact on Foleo"
+
+Read the artifact's authored HTML (Foleo cannot fetch a claude.ai link), make
+it one complete document yourself, publish it privately with an optional
+`origin` of `{ "provider": "claude_artifact", "url": "https://claude.ai/artifact/<id>" }`,
+check `approvedContentHash` against your own sha256 of the final file, and give
+the human the returned `url` (it opens for the owner) and `dashboardUrl`. Foleo
+never rewrites the page. A Markdown artifact takes the Markdown path, without
+`origin`. The steps and the `claude_runtime_unavailable` warning are in
+`references/active-html.md`.
+
+## Sending and reading source
+
+Every way of sending bytes ends in the same checks, approval and commit as
+inline `content`. Limits are in `get_foleo_capabilities` under
+`sourceTransports`.
+
+- **Change part of a page**: on an update, send
+  `source: { sourceFormat, edits: [{ find, replace }], baseContentHash }`
+  instead of the whole page. Each `find` is literal text that must occur
+  exactly once; edits apply in order. `baseContentHash` is the sha256 of the
+  source you edited — `byteHash` from `get_foleo_artifact_source`.
+  `edit_match_missing` or `edit_match_ambiguous` means re-read the source and
+  pick text that occurs once; `edit_base_mismatch` or `revision_drift` means
+  the source moved under you.
+- **Send a large page**: `stage_foleo_upload` (`mode: "chunks"`), then
+  `append_foleo_upload_chunk` for index 0, 1, 2 … each with its own sha256,
+  then `publish_foleo_artifact` with
+  `source: { sourceFormat, uploadId, sha256 }`. A failed chunk is resent
+  alone. With open network access (not claude.ai's sandbox), `mode: "direct"`
+  returns a one-time `putUrl` for a single `curl -T`. Staging publishes
+  nothing, and an upload serves one publish.
+- **Read source back**: `get_foleo_artifact_source` returns small text inline,
+  and larger files as a URL valid for 60 seconds. If you cannot fetch URLs,
+  pass the returned cursor to read 64 KiB at a time.
+
+Always compare the returned hash (`approvedContentHash` for HTML,
+`contentHash` for Markdown) with your own sha256 of the final source.
+
 ## When something fails
 
 | Code                             | What it means                                                | What to do                                                   |
@@ -157,5 +206,8 @@ from the document. Names belong to active-HTML artifacts.
 | `matching_source_exists`         | This content is already published                            | Report the candidates; update one instead of creating a twin |
 | `quota_*`                        | A limit the account has hit                                  | Report it; never retry an exhausted quota                    |
 | `html_unavailable`               | This account has no active-HTML access                       | Stop; publishing Markdown instead is the user's call         |
+| `invalid_origin`                 | `origin` is not an exact `https://claude.ai/artifact/<id>`   | Fix the link (no query or fragment) or omit `origin`         |
+| `origin_conflict`                | An update named a different origin than the recorded one     | Keep the recorded origin, or publish a new artifact          |
+| `scoped_address_unavailable`     | No `<slug>--<handle>` address fits or is free                | Try a shorter slug; a vanity name is the human's call        |
 
 Anything else: report the code verbatim and stop.
