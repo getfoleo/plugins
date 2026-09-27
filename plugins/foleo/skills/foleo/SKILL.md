@@ -93,6 +93,15 @@ Lifecycle — each one is a distinct, separately approved act:
 Active HTML only (see `references/active-html.md`):
 `get_foleo_publish_approval`, `commit_foleo_publish`.
 
+Opening access beyond this connection's publishing policy (including an open
+HTML page becoming unlisted) returns `approval_required` with a `reviewUrl`,
+and nothing changes. A contained HTML page may become unlisted at once only
+under the human's `private_and_contained_unlisted` opt-in. Send the human an
+approval link when one is returned, then poll
+`get_foleo_access_approval` and apply the approved change once with
+`commit_foleo_access_change`, passing a stable idempotency key. The human sets
+the policy in Foleo; you cannot change it.
+
 A tool the server did not advertise is not available to this connection — that
 is the account's eligibility or role talking. Do not look for a workaround.
 
@@ -108,7 +117,11 @@ purge remains available in the dashboard and CLI.
 
 For Markdown, read `references/markdown.md`.
 For active HTML, read `references/active-html.md` — it is gated, it is
-approval-per-candidate, and most accounts cannot use it at all.
+eligible-account only, and a covered clean private or opt-in contained unlisted
+page can publish in one call. Read the result's `access`, `runtimeProfile` and
+`profileNote` before describing the link. Contained limits browser background
+requests but does not stop navigation, `window.open`, WebRTC, CDN request paths
+or pre-PSL shared cookies.
 
 Quick shape for Markdown:
 
