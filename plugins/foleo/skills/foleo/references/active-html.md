@@ -11,12 +11,18 @@ account cannot publish active HTML — say so and stop. Calling the tools anyway
 returns `html_unavailable`. Enrollment is an operator decision, never something
 to ask the server for twice.
 
-The new-connection default is `private`; existing grants keep `ask_each_time`
-until the human changes them in Foleo Access. `private` permits clean private
-pages to publish in one call. The human may opt into
-`private_and_contained_unlisted`: a clean unlisted page that fits the contained
-runtime profile can then publish in one call. Open unlisted pages still need
-per-candidate approval. Anyone with an unlisted URL can read it.
+The human sets this connection's publishing policy in Foleo Access;
+`get_foleo_capabilities` returns it as `connectionPolicy`.
+
+| Policy | Publishes in one call when clean |
+| --- | --- |
+| `private` (default for new connections) | Private pages |
+| `private_and_unlisted` | Private and unlisted pages, open or contained |
+| `private_and_contained_unlisted` | Private pages, and unlisted pages under the contained profile |
+| `ask_each_time` | Nothing; every HTML page needs the human's approval |
+
+Anyone with an unlisted URL can read it. Under every policy, a safety match,
+a public page and a password page need the human.
 
 Use top-level `runtimeProfile: "auto" | "open" | "contained"` on an HTML publish.
 `auto` is the default: Foleo checks references and chooses contained only when
@@ -32,8 +38,9 @@ as non-exfiltrating.
 
 ## The approval loop
 
-Publishing HTML over MCP stages exact bytes first. A covered private page with
-a clear safety gate can then publish in that same call. A safety match needs
+Publishing HTML over MCP stages exact bytes first. A page the connection's
+policy covers, with a clear safety gate, can then publish in that same call. A
+safety match needs
 human review.
 
 1. Call `publish_foleo_artifact` with an inline single-file page:
@@ -49,6 +56,11 @@ human review.
    If the result says `published`, give the human its `url` and explain its
    `access`, `runtimeProfile`, `profileNote` and undo. If it says `approval_required`, nothing
    is live: the server staged the exact bytes and returned an `approvalId`.
+   `approvalReason` says why: `safety_review` (the safety check flagged the
+   page; see `safetyFindings`), `beyond_connection_policy` (the policy does not
+   cover this visibility or profile) or `connection_asks_each_time`. `next`
+   names the policy that would cover requests like this; tell the human, who
+   alone can change it in Foleo Access.
 
 2. For `approval_required`, give the human the `reviewUrl`. They see the exact source and its hash on
    a Foleo page — never on the artifact's own domain — and approve or reject.
@@ -115,7 +127,7 @@ When the human says "put this Claude artifact on Foleo":
    one fails with `origin_conflict`.
 
 5. **Check and hand over.** `approvedContentHash` must equal your sha256. Give
-   the human `url` (it opens for the owner after Foleo sign-in) and
+   the human `url` (it opens for the owning Foleo organization after sign-in) and
    `dashboardUrl`.
 
 If `warnings` contains `claude_runtime_unavailable`, the page calls APIs only

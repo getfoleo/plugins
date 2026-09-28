@@ -96,14 +96,17 @@ Lifecycle — each one is a distinct, separately approved act:
 Active HTML only (see `references/active-html.md`):
 `get_foleo_publish_approval`, `commit_foleo_publish`.
 
-Opening access beyond this connection's publishing policy (including an open
-HTML page becoming unlisted) returns `approval_required` with a `reviewUrl`,
-and nothing changes. A contained HTML page may become unlisted at once only
-under the human's `private_and_contained_unlisted` opt-in. Send the human an
-approval link when one is returned, then poll
+Opening access beyond this connection's publishing policy returns
+`approval_required` with a `reviewUrl`, and nothing changes. The result's
+`approvalReason` (`beyond_connection_policy` or `connection_asks_each_time`),
+`connectionPolicy` and `next` say why; pass `next` on to the human. Under
+`private_and_unlisted` any page may become unlisted at once; under
+`private_and_contained_unlisted` only a contained HTML page may. Adding a
+working address to an unlisted page is covered only for contained HTML. Send
+the human an approval link when one is returned, then poll
 `get_foleo_access_approval` and apply the approved change once with
 `commit_foleo_access_change`, passing a stable idempotency key. The human sets
-the policy in Foleo; you cannot change it.
+the policy in Foleo Access; you cannot change it.
 
 A tool the server did not advertise is not available to this connection — that
 is the account's eligibility or role talking. Do not look for a workaround.
@@ -120,8 +123,8 @@ purge remains available in the dashboard and CLI.
 
 For Markdown, read `references/markdown.md`.
 For active HTML, read `references/active-html.md` — it is gated, it is
-eligible-account only, and a covered clean private or opt-in contained unlisted
-page can publish in one call. Read the result's `access`, `runtimeProfile` and
+eligible-account only, and a clean page the connection's policy covers can
+publish in one call. Read the result's `access`, `runtimeProfile` and
 `profileNote` before describing the link. Contained limits browser background
 requests but does not stop navigation, `window.open`, WebRTC, CDN request paths
 or pre-PSL shared cookies.
@@ -162,7 +165,7 @@ Read the artifact's authored HTML (Foleo cannot fetch a claude.ai link), make
 it one complete document yourself, publish it privately with an optional
 `origin` of `{ "provider": "claude_artifact", "url": "https://claude.ai/artifact/<id>" }`,
 check `approvedContentHash` against your own sha256 of the final file, and give
-the human the returned `url` (it opens for the owner) and `dashboardUrl`. Foleo
+the human the returned `url` (it opens for the owning Foleo organization after sign-in) and `dashboardUrl`. Foleo
 never rewrites the page. A Markdown artifact takes the Markdown path, without
 `origin`. The steps and the `claude_runtime_unavailable` warning are in
 `references/active-html.md`.
