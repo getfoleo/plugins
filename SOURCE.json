@@ -1,5 +1,5 @@
 {
   "generator": "packages/foleo-agent-plugin/scripts/build-mirror.mjs",
-  "pluginVersion": "0.1.6",
-  "sourceCommit": "f4df1afd133aaf1f65ba761bd8c4bcf853c7f3e0"
+  "pluginVersion": "0.1.7",
+  "sourceCommit": "8813b0435badc880adfce095bd33b7a2c811e139"
 }

@@ -5,7 +5,7 @@ from your agent, through Foleo's remote MCP server. Installing adds **no
 credential**: the first Foleo tool call opens an OAuth sign-in in your browser,
 and you approve access there.
 
-Plugin version 0.1.6.
+Plugin version 0.1.7.
 
 ## Install
 

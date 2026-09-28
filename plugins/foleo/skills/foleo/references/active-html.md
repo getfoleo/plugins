@@ -16,8 +16,8 @@ The human sets this connection's publishing policy in Foleo Access;
 
 | Policy | Publishes in one call when clean |
 | --- | --- |
-| `private` (default for new connections) | Private pages |
-| `private_and_unlisted` | Private and unlisted pages, open or contained |
+| `private` | Private pages |
+| `private_and_unlisted` (default for new connections) | Private and unlisted pages, open or contained |
 | `private_and_contained_unlisted` | Private pages, and unlisted pages under the contained profile |
 | `ask_each_time` | Nothing; every HTML page needs the human's approval |
 
