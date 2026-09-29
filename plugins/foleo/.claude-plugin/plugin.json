@@ -1,7 +1,7 @@
 {
   "name": "foleo",
   "displayName": "Foleo",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Publish and manage Markdown and eligible active HTML artifacts on Foleo through its remote MCP server.",
   "author": {
     "name": "Foleo",

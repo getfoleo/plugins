@@ -17,8 +17,13 @@ The server derives the title and the slug from the document, so the returned
 `url` is `https://<account-handle>.<foleo tenant domain>/<slug>`. Appending
 `.md` to that URL serves the Markdown source. Both URLs survive updates.
 
-New pages are **unlisted**: anyone with the link can read them, and nothing
-advertises them. That is the only access state Markdown has today.
+New pages are **unlisted** by default: anyone with the link can read them, and
+nothing advertises them. Pass `settings: { "visibility": "private" }` to publish
+a **private** document instead. It keeps the same `url`, which opens only for
+signed-in members of the owning Foleo organization: everyone else sees a
+not-found page with a Sign in button, and a member who signs in lands on the
+document. Read the result's `access` before describing the link. A Markdown
+publish never waits for approval under any connection policy.
 
 `name` is rejected for Markdown (`name_not_supported_for_markdown`). Names are
 an active-HTML concept.
@@ -73,10 +78,16 @@ as mutable. For a Markdown document those are the presentation ones, including:
 - `titleUserSet` / `slugUserSet`: pin the title or slug so later updates stop
   re-deriving them from the content.
 
-`visibility` and `password` are **reserved** for Markdown and return
-`not_implemented`. That is deliberate, not a gap to route around: Markdown has
-no private mode, no password, and no public/indexed mode. If the user needs
-access control, say so plainly.
+- `visibility`: `unlisted` or `private`. The URL never changes. Making a
+  document private applies at once. Making a private document unlisted widens
+  access, so it follows this connection's policy: it applies at once under
+  `private_and_unlisted`, and otherwise returns `approval_required` for the
+  human.
+
+`password`, and the `password` and `public` visibilities, return
+`not_implemented` for Markdown. That is deliberate, not a gap to route around
+and not worth a retry: Markdown has no password and no public/indexed mode. If
+the user needs either, say so plainly.
 
 ## Things worth telling the user
 

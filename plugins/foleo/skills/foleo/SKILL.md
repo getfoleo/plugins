@@ -152,6 +152,13 @@ Updating the same artifact keeps its URL:
 Markdown takes no `name`: its address is the account handle plus a slug derived
 from the document. Names belong to active-HTML artifacts.
 
+A Markdown document is `unlisted` (the default) or `private`, set with
+`settings.visibility` on publish or later through
+`update_foleo_artifact_settings`. Private keeps the same URL and opens only for
+signed-in members of the owning Foleo organization; everyone else sees a
+not-found page with a Sign in button. Password and public are not available for
+Markdown.
+
 An HTML page you create gets a **scoped** address by default,
 `<slug>--<handle>` (for example `quarterly-report--yourhandle.foleo.site`), and
 `name` is its slug. Scoped addresses are not capped by the name quota. A short
