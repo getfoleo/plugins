@@ -61,6 +61,34 @@ For a small change, send `edits` instead of the whole document:
 
 The result's `contentHash` is the sha256 of the new document.
 
+## Images
+
+A relative image such as `![Sales](images/sales.png)` needs its bytes attached,
+or the page shows a placeholder and the result carries an `asset_missing`
+warning that names the image. An absolute `https://` image URL and a small
+inline `data:image` (64 KiB each, 128 KiB in all) need no upload.
+
+To attach a local PNG, JPEG, GIF or WebP (never SVG):
+
+1. `stage_foleo_upload` with `sourceFormat` `png`, `jpeg`, `gif` or `webp`
+   (`jpeg`, not `jpg`), the file's exact `totalBytes` and the sha256 of its
+   bytes. In `mode: "chunks"`, send each piece with `append_foleo_upload_chunk`
+   as standard padded base64 of at most `chunkBytes` raw bytes, with `sha256`
+   over the decoded bytes of that piece. `mode: "direct"` takes one raw PUT.
+2. `publish_foleo_artifact` with the Markdown and
+   `assets: [{ "path": "images/sales.png", "uploadId": "<id>", "sha256": "<file sha256>" }]`.
+   `path` is exactly what the Markdown writes, relative, with the extension of
+   the staged type, and made only of letters, digits, `.`, `_` and `-` in each
+   segment (no spaces or Unicode: rename the file and the reference).
+
+Limits (see `sourceTransports.images` in `get_foleo_capabilities`): 8 images per
+document, 1 MiB each, 2 MiB of new images per call. An update keeps the current
+version's images on its own, so attach only images that are new or changed; an
+entry with an existing `path` replaces it, and `{ "path": "…", "remove": true }`
+drops one (deleting the Markdown reference does not). The result's `assets` lists what the
+version holds. Images of a private document open only for the same signed-in
+members. Staging publishes nothing, and a staged image serves one publish.
+
 ## Already published?
 
 If creating returns `matching_source_exists`, Foleo already holds this content
